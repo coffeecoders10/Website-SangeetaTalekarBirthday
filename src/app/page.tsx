@@ -26,12 +26,12 @@ export default function Home() {
     <main className="relative flex-1">
       <BackgroundOrnaments />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-16 md:py-24 lg:flex-row lg:items-start lg:gap-16">
+      <div className="relative z-10 mx-auto flex h-screen w-full max-w-5xl flex-col justify-center gap-6 overflow-hidden px-6 py-6 lg:flex-row lg:items-center lg:gap-16">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex-1 lg:sticky lg:top-16"
+          className="flex min-h-0 flex-1 flex-col justify-center"
         >
           <span className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs uppercase tracking-widest text-amber-200">
             A collage for {PERSON_PROFILE.name}
@@ -58,9 +58,9 @@ export default function Home() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          className="flex-1"
+          className="flex min-h-0 flex-1 flex-col justify-center"
         >
-          <Card className="p-6 sm:p-8">
+          <Card className="flex max-h-full flex-col overflow-y-auto p-6 sm:p-8">
             <WishForm
               concept={concept}
               onShuffle={handleShuffle}
