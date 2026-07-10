@@ -6,22 +6,13 @@ import { cn } from "@/lib/cn";
 
 const ROTATIONS = [-3, 2, -1, 3, -2, 1];
 const ACCENTS = [
-  "from-rose-300/20 to-transparent",
-  "from-amber-200/20 to-transparent",
-  "from-plum-700/40 to-transparent",
+  "from-rose-300/25 to-transparent",
+  "from-amber-200/25 to-transparent",
+  "from-plum-700/50 to-transparent",
+  "from-fuchsia-400/20 to-transparent",
+  "from-sky-300/20 to-transparent",
+  "from-emerald-300/15 to-transparent",
 ];
-
-function formatDate(isoString: string) {
-  try {
-    return new Date(isoString).toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  } catch {
-    return null;
-  }
-}
 
 type WishCardProps = {
   entry: WishEntry;
@@ -32,7 +23,6 @@ export function WishCard({ entry, index }: WishCardProps) {
   const shouldReduceMotion = useReducedMotion();
   const rotation = ROTATIONS[index % ROTATIONS.length];
   const accent = ACCENTS[index % ACCENTS.length];
-  const date = formatDate(entry.createdAt);
 
   return (
     <motion.article
@@ -51,8 +41,8 @@ export function WishCard({ entry, index }: WishCardProps) {
         <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", accent)} />
 
         <div className="relative">
-          <span className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-widest text-rose-300">
-            {entry.conceptLabel}
+          <span className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-widest text-foreground/40">
+            If you were <span className="font-semibold tracking-wider text-rose-300">{entry.conceptLabel}</span> you&apos;d be
           </span>
 
           <p className="mt-4 font-serif text-lg italic leading-snug text-foreground">
@@ -60,16 +50,19 @@ export function WishCard({ entry, index }: WishCardProps) {
           </p>
 
           {entry.why && (
-            <p className="mt-2 text-sm leading-relaxed text-foreground/70">{entry.why}</p>
+            <p className="mt-2 font-sans text-sm leading-relaxed text-foreground/70">{entry.why}</p>
           )}
 
           {entry.note && (
-            <p className="mt-3 text-sm leading-relaxed text-foreground/70">{entry.note}</p>
+            <div className="mt-4 border-t border-white/10 pt-3">
+              <p className="font-serif text-xs italic leading-relaxed text-foreground/60">{entry.note}</p>
+            </div>
           )}
 
-          <div className="mt-5 flex items-center justify-between text-xs text-foreground/50">
-            <span>From {entry.fromName}</span>
-            {date && <span>{date}</span>}
+          <div className="mt-5 text-right">
+            <span className="font-serif text-base italic text-rose-200/80">
+              — {entry.fromName}
+            </span>
           </div>
         </div>
       </div>
