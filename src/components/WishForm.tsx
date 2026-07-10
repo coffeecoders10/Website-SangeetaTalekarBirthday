@@ -17,7 +17,8 @@ import { Input } from "./ui/Input";
 import { Textarea } from "./ui/Textarea";
 
 const wishFormSchema = z.object({
-  answer: z.string().min(2, "Tell us a little more.").max(280, "Keep it under 280 characters."),
+  answer: z.string().min(1, "Give us your answer.").max(140, "Keep it under 140 characters."),
+  why: z.string().min(2, "Tell us why.").max(500, "Keep it under 500 characters."),
   note: z.string().max(1200, "Keep the note under 1200 characters.").optional().or(z.literal("")),
   fromName: z.string().min(1, "Let them know who this is from.").max(80, "Keep the name under 80 characters."),
 });
@@ -43,7 +44,7 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
     formState: { errors },
   } = useForm<WishFormValues>({
     resolver: zodResolver(wishFormSchema),
-    defaultValues: { answer: "", note: "", fromName: "" },
+    defaultValues: { answer: "", why: "", note: "", fromName: "" },
   });
 
   const onSubmit = async (values: WishFormValues) => {
@@ -57,6 +58,7 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
         conceptLabel: concept.label,
         prompt: buildPrompt(concept),
         answer: values.answer,
+        why: values.why,
         note: values.note || undefined,
         fromName: values.fromName,
         image: image ?? undefined,
@@ -79,9 +81,8 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
         <label htmlFor="answer" className="mb-2 block text-sm font-medium text-foreground/80">
           Your answer
         </label>
-        <Textarea
+        <Input
           id="answer"
-          rows={3}
           placeholder={concept.placeholder ?? "Type your answer..."}
           hasError={Boolean(errors.answer)}
           aria-invalid={Boolean(errors.answer)}
@@ -96,13 +97,41 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
       </div>
 
       <div>
+        <label htmlFor="why" className="mb-2 block text-sm font-medium text-foreground/80">
+          Why?
+        </label>
+        <Textarea
+          id="why"
+          rows={3}
+          placeholder="Tell us why you answered that..."
+          hasError={Boolean(errors.why)}
+          aria-invalid={Boolean(errors.why)}
+          aria-describedby={errors.why ? "why-error" : undefined}
+          {...register("why")}
+        />
+        {errors.why && (
+          <p id="why-error" className="mt-1 text-sm text-red-300">
+            {errors.why.message}
+          </p>
+        )}
+      </div>
+
+      <ImageUpload
+        value={image}
+        onChange={setImage}
+        error={imageError ?? undefined}
+        onError={setImageError}
+        label="A photo of your answer (optional)"
+      />
+
+      <div>
         <label htmlFor="note" className="mb-2 block text-sm font-medium text-foreground/80">
-          Add a little note for {PERSON_PROFILE.name} (optional)
+          Note / wish for {PERSON_PROFILE.name} (optional)
         </label>
         <Textarea
           id="note"
           rows={3}
-          placeholder="A memory, a wish, anything you want to say..."
+          placeholder="Happy birthday..."
           hasError={Boolean(errors.note)}
           aria-invalid={Boolean(errors.note)}
           aria-describedby={errors.note ? "note-error" : undefined}
@@ -114,8 +143,6 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
           </p>
         )}
       </div>
-
-      <ImageUpload value={image} onChange={setImage} error={imageError ?? undefined} onError={setImageError} />
 
       <div>
         <label htmlFor="fromName" className="mb-2 block text-sm font-medium text-foreground/80">

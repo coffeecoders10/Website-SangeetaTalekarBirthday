@@ -69,6 +69,10 @@ export function WishCard({ entry, index }: WishCardProps) {
             &ldquo;{entry.answer}&rdquo;
           </p>
 
+          {entry.why && (
+            <p className="mt-2 text-sm leading-relaxed text-foreground/70">{entry.why}</p>
+          )}
+
           {entry.note && (
             <p className="mt-3 text-sm leading-relaxed text-foreground/70">{entry.note}</p>
           )}

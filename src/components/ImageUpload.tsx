@@ -11,6 +11,7 @@ type ImageUploadProps = {
   onChange: (file: File | null) => void;
   error?: string;
   onError?: (message: string | null) => void;
+  label?: string;
 };
 
 function validateFile(file: File): string | null {
@@ -23,7 +24,7 @@ function validateFile(file: File): string | null {
   return null;
 }
 
-export function ImageUpload({ value, onChange, error, onError }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, error, onError, label = "Add a photo (optional)" }: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
@@ -55,7 +56,7 @@ export function ImageUpload({ value, onChange, error, onError }: ImageUploadProp
   return (
     <div>
       <label htmlFor={inputId} className="mb-2 block text-sm font-medium text-foreground/80">
-        Add a photo (optional)
+        {label}
       </label>
 
       <div

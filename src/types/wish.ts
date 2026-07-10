@@ -5,6 +5,7 @@ export type WishEntry = {
   conceptLabel: string;
   prompt: string;
   answer: string;
+  why: string;
   note?: string;
   fromName: string;
   imageUrl?: string;
@@ -18,6 +19,7 @@ export type CreateWishInput = {
   conceptLabel: string;
   prompt: string;
   answer: string;
+  why: string;
   note?: string;
   fromName: string;
   image?: File;

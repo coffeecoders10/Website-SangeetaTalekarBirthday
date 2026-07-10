@@ -15,6 +15,7 @@ export async function createWish(input: CreateWishInput): Promise<WishEntry> {
   formData.append("conceptLabel", input.conceptLabel);
   formData.append("prompt", input.prompt);
   formData.append("answer", input.answer);
+  formData.append("why", input.why);
   formData.append("fromName", input.fromName);
   if (input.note) formData.append("note", input.note);
   if (input.image) formData.append("image", input.image);
