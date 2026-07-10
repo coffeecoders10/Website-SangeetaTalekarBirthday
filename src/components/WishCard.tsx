@@ -41,8 +41,8 @@ export function WishCard({ entry, index }: WishCardProps) {
         <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", accent)} />
 
         <div className="relative">
-          <span className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-widest text-foreground/40">
-            If you were <span className="font-semibold tracking-wider text-rose-300">{entry.conceptLabel}</span> you&apos;d be
+          <span className="inline-flex flex-wrap items-baseline gap-x-1.5 rounded-2xl bg-white/8 px-3 py-1.5 text-[11px] tracking-wide text-foreground/70">
+            If you were <span className="font-serif text-base italic text-foreground">{entry.conceptLabel}</span> you&apos;d be
           </span>
 
           <p className="mt-4 font-serif text-lg italic leading-snug text-foreground">
