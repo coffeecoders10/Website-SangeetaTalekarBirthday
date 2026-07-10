@@ -3,12 +3,14 @@
 import { AnimatePresence, motion } from "motion/react";
 import type { Concept } from "@/data/concepts";
 import { buildPrompt } from "@/lib/concepts";
+import { Button } from "./ui/Button";
 
 type ConceptPromptProps = {
   concept: Concept;
+  onShuffle: () => void;
 };
 
-export function ConceptPrompt({ concept }: ConceptPromptProps) {
+export function ConceptPrompt({ concept, onShuffle }: ConceptPromptProps) {
   const prompt = buildPrompt(concept);
 
   return (
@@ -21,14 +23,15 @@ export function ConceptPrompt({ concept }: ConceptPromptProps) {
           exit={{ opacity: 0, y: -16, filter: "blur(6px)" }}
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
-          <span className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs uppercase tracking-widest text-rose-300">
-            {concept.category}
-          </span>
-          <h1 className="mt-4 font-serif text-3xl italic leading-tight text-foreground sm:text-4xl md:text-5xl">
+          <h1 className="font-serif text-3xl italic leading-tight text-foreground sm:text-4xl md:text-5xl">
             {prompt}
           </h1>
         </motion.div>
       </AnimatePresence>
+
+      <Button type="button" variant="secondary" onClick={onShuffle} className="mt-6">
+        Shuffle prompt
+      </Button>
     </div>
   );
 }

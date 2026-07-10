@@ -1,5 +1,5 @@
 export const PERSON_PROFILE = {
-  name: "Jane Doe",
+  name: "Dr. Sangeeta Talekar",
   pronouns: {
     subject: "she", // he, she, they
     object: "her", // him, her, them

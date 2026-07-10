@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "motion/react";
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { BackgroundOrnaments } from "@/components/BackgroundOrnaments";
 import { ConceptPrompt } from "@/components/ConceptPrompt";
@@ -33,25 +32,13 @@ export default function Home() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="flex min-h-0 flex-1 flex-col justify-center"
         >
-          <span className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs uppercase tracking-widest text-amber-200">
-            A collage for {PERSON_PROFILE.name}
+          <span className="inline-block self-start rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs uppercase tracking-widest text-amber-200">
+            It's {PERSON_PROFILE.name}'s birthday!
           </span>
 
           <div className="mt-6">
-            <ConceptPrompt concept={concept} />
+            <ConceptPrompt concept={concept} onShuffle={handleShuffle} />
           </div>
-
-          <p className="mt-6 max-w-md text-foreground/70">
-            Answer the prompt above, add a note if you want, and sign it from you.
-            Shuffle until the prompt feels right.
-          </p>
-
-          <Link
-            href="/wishes"
-            className="mt-8 inline-flex items-center gap-2 text-sm text-rose-300 underline underline-offset-4"
-          >
-            See the full collage &rarr;
-          </Link>
         </motion.div>
 
         <motion.div

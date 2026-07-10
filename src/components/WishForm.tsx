@@ -71,9 +71,13 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-[0.8rem] sm:text-[0.875rem]" noValidate>
+      <p className="text-[0.7rem] text-foreground/60 sm:text-[0.75rem]">
+        Answer the prompt and sign it from you. Answer as many of these prompts as you like, and we'll add them to a collage for {PERSON_PROFILE.name}.
+      </p>
+
       <div>
-        <label htmlFor="answer" className="mb-2 block text-sm font-medium text-foreground/80">
+        <label htmlFor="answer" className="mb-1.5 block font-medium text-foreground/80">
           Your answer
         </label>
         <Input
@@ -82,17 +86,18 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
           hasError={Boolean(errors.answer)}
           aria-invalid={Boolean(errors.answer)}
           aria-describedby={errors.answer ? "answer-error" : undefined}
+          className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
           {...register("answer")}
         />
         {errors.answer && (
-          <p id="answer-error" className="mt-1 text-sm text-red-300">
+          <p id="answer-error" className="mt-1 text-[0.75rem] text-red-300">
             {errors.answer.message}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor="why" className="mb-2 block text-sm font-medium text-foreground/80">
+        <label htmlFor="why" className="mb-1.5 block font-medium text-foreground/80">
           Why?
         </label>
         <Textarea
@@ -102,17 +107,40 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
           hasError={Boolean(errors.why)}
           aria-invalid={Boolean(errors.why)}
           aria-describedby={errors.why ? "why-error" : undefined}
+          className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
           {...register("why")}
         />
         {errors.why && (
-          <p id="why-error" className="mt-1 text-sm text-red-300">
+          <p id="why-error" className="mt-1 text-[0.75rem] text-red-300">
             {errors.why.message}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor="note" className="mb-2 block text-sm font-medium text-foreground/80">
+        <label htmlFor="fromName" className="mb-1.5 block font-medium text-foreground/80">
+          From
+        </label>
+        <Input
+          id="fromName"
+          placeholder="Your name"
+          hasError={Boolean(errors.fromName)}
+          aria-invalid={Boolean(errors.fromName)}
+          aria-describedby={errors.fromName ? "fromName-error" : undefined}
+          className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
+          {...register("fromName")}
+        />
+        {errors.fromName && (
+          <p id="fromName-error" className="mt-1 text-[0.75rem] text-red-300">
+            {errors.fromName.message}
+          </p>
+        )}
+      </div>
+
+      <hr className="border-t border-white/10" />
+
+      <div>
+        <label htmlFor="note" className="mb-1.5 block font-medium text-foreground/80">
           Note / wish for {PERSON_PROFILE.name} (optional)
         </label>
         <Textarea
@@ -122,42 +150,23 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
           hasError={Boolean(errors.note)}
           aria-invalid={Boolean(errors.note)}
           aria-describedby={errors.note ? "note-error" : undefined}
+          className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
           {...register("note")}
         />
         {errors.note && (
-          <p id="note-error" className="mt-1 text-sm text-red-300">
+          <p id="note-error" className="mt-1 text-[0.75rem] text-red-300">
             {errors.note.message}
           </p>
         )}
       </div>
 
-      <div>
-        <label htmlFor="fromName" className="mb-2 block text-sm font-medium text-foreground/80">
-          From
-        </label>
-        <Input
-          id="fromName"
-          placeholder="Your name"
-          hasError={Boolean(errors.fromName)}
-          aria-invalid={Boolean(errors.fromName)}
-          aria-describedby={errors.fromName ? "fromName-error" : undefined}
-          {...register("fromName")}
-        />
-        {errors.fromName && (
-          <p id="fromName-error" className="mt-1 text-sm text-red-300">
-            {errors.fromName.message}
-          </p>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit" disabled={status === "loading"} className="sm:flex-1">
-          {status === "loading" ? "Sending..." : "Send wish"}
-        </Button>
-        <Button type="button" variant="secondary" onClick={onShuffle} disabled={status === "loading"}>
-          Shuffle prompt
-        </Button>
-      </div>
+      <Button
+        type="submit"
+        disabled={status === "loading"}
+        className="w-full px-4 py-2.5 text-[0.8rem] sm:text-[0.875rem]"
+      >
+        {status === "loading" ? "Sending..." : "Send wish"}
+      </Button>
 
       <AnimatePresence>
         {status !== "idle" && status !== "loading" && (
