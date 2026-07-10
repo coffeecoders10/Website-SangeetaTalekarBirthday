@@ -8,8 +8,6 @@ export type WishEntry = {
   why: string;
   note?: string;
   fromName: string;
-  imageUrl?: string;
-  imageAlt?: string;
   createdAt: string;
 };
 
@@ -22,5 +20,4 @@ export type CreateWishInput = {
   why: string;
   note?: string;
   fromName: string;
-  image?: File;
 };

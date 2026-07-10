@@ -10,7 +10,6 @@ import type { Concept } from "@/data/concepts";
 import { buildPrompt } from "@/lib/concepts";
 import { createWish } from "@/lib/wishesApi";
 import type { WishEntry } from "@/types/wish";
-import { ImageUpload } from "./ImageUpload";
 import { SubmitState, type SubmitStatus } from "./SubmitState";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
@@ -32,8 +31,6 @@ type WishFormProps = {
 };
 
 export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
-  const [image, setImage] = useState<File | null>(null);
-  const [imageError, setImageError] = useState<string | null>(null);
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string>();
 
@@ -61,12 +58,10 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
         why: values.why,
         note: values.note || undefined,
         fromName: values.fromName,
-        image: image ?? undefined,
       });
 
       setStatus("success");
       reset();
-      setImage(null);
       onSubmitted(entry);
       onShuffle();
     } catch {
@@ -115,14 +110,6 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
           </p>
         )}
       </div>
-
-      <ImageUpload
-        value={image}
-        onChange={setImage}
-        error={imageError ?? undefined}
-        onError={setImageError}
-        label="A photo of your answer (optional)"
-      />
 
       <div>
         <label htmlFor="note" className="mb-2 block text-sm font-medium text-foreground/80">

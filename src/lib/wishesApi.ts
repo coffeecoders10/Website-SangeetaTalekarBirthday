@@ -8,21 +8,10 @@ export async function getWishes(): Promise<WishEntry[]> {
 }
 
 export async function createWish(input: CreateWishInput): Promise<WishEntry> {
-  // TODO: Replace this placeholder POST with the real backend endpoint when available.
-  const formData = new FormData();
-  formData.append("targetName", input.targetName);
-  formData.append("conceptId", input.conceptId);
-  formData.append("conceptLabel", input.conceptLabel);
-  formData.append("prompt", input.prompt);
-  formData.append("answer", input.answer);
-  formData.append("why", input.why);
-  formData.append("fromName", input.fromName);
-  if (input.note) formData.append("note", input.note);
-  if (input.image) formData.append("image", input.image);
-
   const response = await fetch("/api/wishes", {
     method: "POST",
-    body: formData,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
   });
 
   if (!response.ok) throw new Error("Failed to create wish");

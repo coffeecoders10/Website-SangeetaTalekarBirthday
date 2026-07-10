@@ -55,16 +55,6 @@ export function WishCard({ entry, index }: WishCardProps) {
             {entry.conceptLabel}
           </span>
 
-          {entry.imageUrl && (
-            <div className="mt-4 overflow-hidden rounded-2xl">
-              <img
-                src={entry.imageUrl}
-                alt={entry.imageAlt ?? `Image shared with ${entry.fromName}'s wish`}
-                className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-          )}
-
           <p className="mt-4 font-serif text-lg italic leading-snug text-foreground">
             &ldquo;{entry.answer}&rdquo;
           </p>

@@ -1,83 +1,91 @@
 import { NextResponse } from "next/server";
-import { PERSON_PROFILE } from "@/config/person";
-import type { WishEntry } from "@/types/wish";
+import type { CreateWishInput, WishEntry } from "@/types/wish";
 
-// TODO: Replace this in-memory mock list with a real database fetch.
-const mockWishes: WishEntry[] = [
-  {
-    id: "mock-1",
-    targetName: PERSON_PROFILE.name,
-    conceptId: "season",
-    conceptLabel: "season",
-    prompt: `If ${PERSON_PROFILE.name} were a season, what would ${PERSON_PROFILE.pronouns.subject} be?`,
-    answer: "Spring after a long winter",
-    why: "Because you always bring warmth after the hardest stretches.",
-    note: "The kind that makes everything feel possible again.",
-    fromName: "A friend",
-    imageUrl: "",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-  },
-  {
-    id: "mock-2",
-    targetName: PERSON_PROFILE.name,
-    conceptId: "color",
-    conceptLabel: "color",
-    prompt: `If ${PERSON_PROFILE.name} were a color, what would ${PERSON_PROFILE.pronouns.subject} be?`,
-    answer: "The color of sunlight on a kitchen wall",
-    why: "Warm, golden, and impossible not to smile at.",
-    fromName: "Someone who loves you",
-    imageUrl: "",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-  },
-  {
-    id: "mock-3",
-    targetName: PERSON_PROFILE.name,
-    conceptId: "animal",
-    conceptLabel: "animal",
-    prompt: `If ${PERSON_PROFILE.name} were an animal, what would ${PERSON_PROFILE.pronouns.subject} be?`,
-    answer: "A golden retriever with old-soul eyes",
-    why: "Loyal to a fault and always the first to greet you.",
-    note: "Loyal, warm, and always happy to see you at the door.",
-    fromName: "The kids",
-    imageUrl: "",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
-  },
-  {
-    id: "mock-4",
-    targetName: PERSON_PROFILE.name,
-    conceptId: "bird",
-    conceptLabel: "bird",
-    prompt: `If ${PERSON_PROFILE.name} were a bird, what would ${PERSON_PROFILE.pronouns.subject} be?`,
-    answer: "A hummingbird, always in motion, never missing a beat",
-    why: "You never sit still and somehow keep everyone else energized too.",
-    fromName: "A cousin",
-    imageUrl: "",
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-  },
-];
+const DICTIONARY_ID = "birthday_montage";
+const RECORD_ID = "1";
+
+function getConfig() {
+  const baseUrl = process.env.API_BASE_URL;
+  const token = process.env.API_BEARER_TOKEN;
+  if (!baseUrl || !token) return null;
+  return {
+    url: `${baseUrl}/flask_api/db_query/${DICTIONARY_ID}/${RECORD_ID}`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+}
+
+async function fetchWishes(url: string, headers: HeadersInit): Promise<WishEntry[]> {
+  const res = await fetch(url, { method: "GET", headers, cache: "no-store" });
+  if (!res.ok) {
+    if (res.status === 404) return [];
+    throw new Error(`Failed to fetch wishes (${res.status})`);
+  }
+
+  const data = await res.json();
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.wishes)) return data.wishes;
+  if (Array.isArray(data?.value)) return data.value;
+  return [];
+}
 
 export async function GET() {
-  // TODO: Replace with real database fetch.
-  return NextResponse.json(mockWishes);
+  const config = getConfig();
+  if (!config) {
+    return NextResponse.json({ error: "API configuration missing" }, { status: 500 });
+  }
+
+  try {
+    const wishes = await fetchWishes(config.url, config.headers);
+    return NextResponse.json(wishes);
+  } catch (error) {
+    console.error("GET Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
-  // TODO: Replace with real multipart parsing, validation, image storage, and database insert.
-  const formData = await request.formData();
+  const config = getConfig();
+  if (!config) {
+    return NextResponse.json({ error: "API configuration missing" }, { status: 500 });
+  }
 
-  const entry: WishEntry = {
-    id: crypto.randomUUID(),
-    targetName: String(formData.get("targetName") ?? PERSON_PROFILE.name),
-    conceptId: String(formData.get("conceptId") ?? "unknown"),
-    conceptLabel: String(formData.get("conceptLabel") ?? "thing"),
-    prompt: String(formData.get("prompt") ?? ""),
-    answer: String(formData.get("answer") ?? ""),
-    why: String(formData.get("why") ?? ""),
-    note: String(formData.get("note") ?? "") || undefined,
-    fromName: String(formData.get("fromName") ?? "Anonymous"),
-    imageUrl: "",
-    createdAt: new Date().toISOString(),
-  };
+  try {
+    const input = (await request.json()) as CreateWishInput;
 
-  return NextResponse.json(entry, { status: 201 });
+    const entry: WishEntry = {
+      id: crypto.randomUUID(),
+      targetName: input.targetName,
+      conceptId: input.conceptId,
+      conceptLabel: input.conceptLabel,
+      prompt: input.prompt,
+      answer: input.answer,
+      why: input.why,
+      note: input.note || undefined,
+      fromName: input.fromName || "Anonymous",
+      createdAt: new Date().toISOString(),
+    };
+
+    // Always pull the most recent blob before appending, to avoid overwriting
+    // wishes submitted by others since we last read.
+    const existingWishes = await fetchWishes(config.url, config.headers);
+    const updatedWishes = [...existingWishes, entry];
+
+    const res = await fetch(config.url, {
+      method: "PUT",
+      headers: config.headers,
+      body: JSON.stringify(updatedWishes),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to save wish (${res.status})`);
+    }
+
+    return NextResponse.json(entry, { status: 201 });
+  } catch (error) {
+    console.error("POST Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
