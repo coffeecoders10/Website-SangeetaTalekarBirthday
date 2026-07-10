@@ -1,12 +1,10 @@
 "use client";
 
 import { motion } from "motion/react";
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { BackgroundOrnaments } from "@/components/BackgroundOrnaments";
 import { Button } from "@/components/ui/Button";
 import { WishesCollage } from "@/components/WishesCollage";
-import { PERSON_PROFILE } from "@/config/person";
 import { getWishes } from "@/lib/wishesApi";
 import type { WishEntry } from "@/types/wish";
 
@@ -51,14 +49,11 @@ export default function WishesPage() {
             One person, infinite metaphors
           </span>
           <h1 className="mt-4 font-serif text-3xl italic leading-tight text-foreground sm:text-4xl md:text-5xl">
-            A collage of what {PERSON_PROFILE.name} feels like to everyone
+            A collage of what you mean to everyone
           </h1>
-          <Link
-            href="/"
-            className="mt-6 inline-flex items-center gap-2 text-sm text-rose-300 underline underline-offset-4"
-          >
-            &larr; Back to the prompt
-          </Link>
+          <p className="mx-auto mt-4 max-w-xl text-sm text-foreground/60">
+            Everyone answered a simmple question - what you'd be if you were something else entirely — and they answered it in their own way. <br/> Here's what we came up with.
+          </p>
         </motion.div>
 
         {state === "loading" && <CollageSkeleton />}
@@ -77,11 +72,8 @@ export default function WishesPage() {
         {state === "success" && entries.length === 0 && (
           <div className="mx-auto max-w-md rounded-3xl border border-white/15 bg-white/5 px-6 py-10 text-center">
             <p className="text-foreground/90">
-              No wishes yet. Start the collage with the first answer.
+              The wishes are still on their way in. Check back soon.
             </p>
-            <Link href="/">
-              <Button className="mt-4">Add the first wish</Button>
-            </Link>
           </div>
         )}
 
