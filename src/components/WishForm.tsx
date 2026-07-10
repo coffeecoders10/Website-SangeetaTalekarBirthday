@@ -63,122 +63,148 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
       setStatus("success");
       reset();
       onSubmitted(entry);
-      onShuffle();
     } catch {
       setStatus("error");
       setErrorMessage("We couldn't save your wish. Please try again.");
     }
   };
 
+  const handleAnswerAnother = () => {
+    setStatus("idle");
+    setErrorMessage(undefined);
+    onShuffle();
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-[0.8rem] sm:text-[0.875rem]" noValidate>
-      <p className="text-[0.7rem] text-foreground/60 sm:text-[0.75rem]">
-        Answer the prompt and sign it from you. Answer as many of these prompts as you like, and we'll add them to a collage for {PERSON_PROFILE.name}.
-      </p>
-
-      <div>
-        <label htmlFor="answer" className="mb-1.5 block font-medium text-foreground/80">
-          Your answer
-        </label>
-        <Input
-          id="answer"
-          placeholder={concept.placeholder ?? "Type your answer..."}
-          hasError={Boolean(errors.answer)}
-          aria-invalid={Boolean(errors.answer)}
-          aria-describedby={errors.answer ? "answer-error" : undefined}
-          className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
-          {...register("answer")}
-        />
-        {errors.answer && (
-          <p id="answer-error" className="mt-1 text-[0.75rem] text-red-300">
-            {errors.answer.message}
+    <AnimatePresence mode="wait">
+      {status === "success" ? (
+        <motion.div
+          key="success"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          <SubmitState status={status} onAnswerAnother={handleAnswerAnother} />
+        </motion.div>
+      ) : (
+        <motion.form
+          key="form"
+          onSubmit={handleSubmit(onSubmit)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          className="space-y-4 text-[0.8rem] sm:text-[0.875rem]"
+          noValidate
+        >
+          <p className="text-[0.7rem] text-foreground/60 sm:text-[0.75rem]">
+            Answer the prompt below and sign it with your name. <br /> Feel free to answer as many prompts as you'd like — each one becomes part of {PERSON_PROFILE.name}'s collage.
           </p>
-        )}
-      </div>
 
-      <div>
-        <label htmlFor="why" className="mb-1.5 block font-medium text-foreground/80">
-          Why?
-        </label>
-        <Textarea
-          id="why"
-          rows={3}
-          placeholder="Tell us why you answered that..."
-          hasError={Boolean(errors.why)}
-          aria-invalid={Boolean(errors.why)}
-          aria-describedby={errors.why ? "why-error" : undefined}
-          className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
-          {...register("why")}
-        />
-        {errors.why && (
-          <p id="why-error" className="mt-1 text-[0.75rem] text-red-300">
-            {errors.why.message}
-          </p>
-        )}
-      </div>
+          <div>
+            <label htmlFor="answer" className="mb-1.5 block font-medium text-foreground/80">
+              Your answer
+            </label>
+            <Input
+              id="answer"
+              placeholder={concept.placeholder ?? "Type your answer..."}
+              hasError={Boolean(errors.answer)}
+              aria-invalid={Boolean(errors.answer)}
+              aria-describedby={errors.answer ? "answer-error" : undefined}
+              className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
+              {...register("answer")}
+            />
+            {errors.answer && (
+              <p id="answer-error" className="mt-1 text-[0.75rem] text-red-300">
+                {errors.answer.message}
+              </p>
+            )}
+          </div>
 
-      <div>
-        <label htmlFor="fromName" className="mb-1.5 block font-medium text-foreground/80">
-          From
-        </label>
-        <Input
-          id="fromName"
-          placeholder="Your name"
-          hasError={Boolean(errors.fromName)}
-          aria-invalid={Boolean(errors.fromName)}
-          aria-describedby={errors.fromName ? "fromName-error" : undefined}
-          className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
-          {...register("fromName")}
-        />
-        {errors.fromName && (
-          <p id="fromName-error" className="mt-1 text-[0.75rem] text-red-300">
-            {errors.fromName.message}
-          </p>
-        )}
-      </div>
+          <div>
+            <label htmlFor="why" className="mb-1.5 block font-medium text-foreground/80">
+              Why?
+            </label>
+            <Textarea
+              id="why"
+              rows={3}
+              placeholder="Tell us why you answered that..."
+              hasError={Boolean(errors.why)}
+              aria-invalid={Boolean(errors.why)}
+              aria-describedby={errors.why ? "why-error" : undefined}
+              className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
+              {...register("why")}
+            />
+            {errors.why && (
+              <p id="why-error" className="mt-1 text-[0.75rem] text-red-300">
+                {errors.why.message}
+              </p>
+            )}
+          </div>
 
-      <hr className="border-t border-white/10" />
+          <div>
+            <label htmlFor="fromName" className="mb-1.5 block font-medium text-foreground/80">
+              From
+            </label>
+            <Input
+              id="fromName"
+              placeholder="Your name"
+              hasError={Boolean(errors.fromName)}
+              aria-invalid={Boolean(errors.fromName)}
+              aria-describedby={errors.fromName ? "fromName-error" : undefined}
+              className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
+              {...register("fromName")}
+            />
+            {errors.fromName && (
+              <p id="fromName-error" className="mt-1 text-[0.75rem] text-red-300">
+                {errors.fromName.message}
+              </p>
+            )}
+          </div>
 
-      <div>
-        <label htmlFor="note" className="mb-1.5 block font-medium text-foreground/80">
-          Note / wish for {PERSON_PROFILE.name} (optional)
-        </label>
-        <Textarea
-          id="note"
-          rows={3}
-          placeholder="Happy birthday..."
-          hasError={Boolean(errors.note)}
-          aria-invalid={Boolean(errors.note)}
-          aria-describedby={errors.note ? "note-error" : undefined}
-          className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
-          {...register("note")}
-        />
-        {errors.note && (
-          <p id="note-error" className="mt-1 text-[0.75rem] text-red-300">
-            {errors.note.message}
-          </p>
-        )}
-      </div>
+          <hr className="border-t border-white/10" />
 
-      <Button
-        type="submit"
-        disabled={status === "loading"}
-        className="w-full px-4 py-2.5 text-[0.8rem] sm:text-[0.875rem]"
-      >
-        {status === "loading" ? "Sending..." : "Send wish"}
-      </Button>
+          <div>
+            <label htmlFor="note" className="mb-1.5 block font-medium text-foreground/80">
+              Special Message (optional)
+            </label>
+            <Textarea
+              id="note"
+              rows={3}
+              placeholder="Happy birthday..."
+              hasError={Boolean(errors.note)}
+              aria-invalid={Boolean(errors.note)}
+              aria-describedby={errors.note ? "note-error" : undefined}
+              className="px-3 py-2 text-[0.8rem] sm:text-[0.875rem]"
+              {...register("note")}
+            />
+            {errors.note && (
+              <p id="note-error" className="mt-1 text-[0.75rem] text-red-300">
+                {errors.note.message}
+              </p>
+            )}
+          </div>
 
-      <AnimatePresence>
-        {status !== "idle" && status !== "loading" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <Button
+            type="submit"
+            disabled={status === "loading"}
+            className="w-full px-4 py-2.5 text-[0.8rem] sm:text-[0.875rem]"
           >
-            <SubmitState status={status} errorMessage={errorMessage} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </form>
+            {status === "loading" ? "Sending..." : "Send wish"}
+          </Button>
+
+          {status === "error" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <SubmitState status={status} errorMessage={errorMessage} />
+            </motion.div>
+          )}
+        </motion.form>
+      )}
+    </AnimatePresence>
   );
 }
