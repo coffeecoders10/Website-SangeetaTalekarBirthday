@@ -1,18 +1,62 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { BackgroundOrnaments } from "@/components/BackgroundOrnaments";
 import { Button } from "@/components/ui/Button";
 import { WishesCollage } from "@/components/WishesCollage";
+import { cn } from "@/lib/cn";
 import { getWishes } from "@/lib/wishesApi";
 import type { WishEntry } from "@/types/wish";
 
 type FetchState = "loading" | "success" | "error";
 
+type GroupMode = "none" | "sender" | "concept";
+
+const GROUP_OPTIONS: { value: GroupMode; label: string }[] = [
+  { value: "none", label: "None" },
+  { value: "sender", label: "Sender" },
+  { value: "concept", label: "Concept" },
+];
+
+function groupEntries(entries: WishEntry[], mode: GroupMode): WishEntry[][] {
+  if (mode === "none") return entries.map((entry) => [entry]);
+
+  const keyFor = (entry: WishEntry) =>
+    (mode === "sender" ? entry.fromName : entry.conceptId).trim().toLowerCase();
+
+  const order: string[] = [];
+  const groups = new Map<string, WishEntry[]>();
+
+  for (const entry of entries) {
+    const key = keyFor(entry);
+    if (!groups.has(key)) {
+      groups.set(key, []);
+      order.push(key);
+    }
+    groups.get(key)!.push(entry);
+  }
+
+  return order
+    .map((key) => groups.get(key)!)
+    .sort((a, b) => b.length - a.length);
+}
+
 export default function WishesPage() {
   const [entries, setEntries] = useState<WishEntry[]>([]);
   const [state, setState] = useState<FetchState>("loading");
+  const [groupMode, setGroupMode] = useState<GroupMode>("none");
+
+  const groups = useMemo(() => groupEntries(entries, groupMode), [entries, groupMode]);
+
+  const groupLabel = useCallback(
+    (group: WishEntry[]) => {
+      if (groupMode === "sender") return group[0].fromName;
+      if (groupMode === "concept") return group[0].conceptLabel;
+      return null;
+    },
+    [groupMode]
+  );
 
   const fetchWishes = useCallback(() => {
     getWishes()
@@ -56,6 +100,29 @@ export default function WishesPage() {
           </p>
         </motion.div>
 
+        {state === "success" && entries.length > 0 && (
+          <div className="mb-8 flex items-center justify-center gap-2">
+            <span className="text-xs uppercase tracking-widest text-foreground/50">Group by</span>
+            <div className="inline-flex rounded-full border border-white/15 bg-white/5 p-1">
+              {GROUP_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setGroupMode(option.value)}
+                  className={cn(
+                    "rounded-full px-3 py-1 text-xs transition-colors cursor-pointer",
+                    groupMode === option.value
+                      ? "bg-white/15 text-foreground"
+                      : "text-foreground/60 hover:text-foreground/90"
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {state === "loading" && <CollageSkeleton />}
 
         {state === "error" && (
@@ -77,7 +144,9 @@ export default function WishesPage() {
           </div>
         )}
 
-        {state === "success" && entries.length > 0 && <WishesCollage entries={entries} />}
+        {state === "success" && entries.length > 0 && (
+          <WishesCollage groups={groups} groupLabel={groupLabel} transitionKey={groupMode} />
+        )}
       </div>
     </main>
   );
