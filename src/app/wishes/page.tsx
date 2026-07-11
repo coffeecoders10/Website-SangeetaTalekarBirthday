@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BackgroundOrnaments } from "@/components/BackgroundOrnaments";
+import { RibbonBurst } from "@/components/RibbonBurst";
 import { Button } from "@/components/ui/Button";
 import { WishesCollage } from "@/components/WishesCollage";
 import { cn } from "@/lib/cn";
@@ -98,6 +99,19 @@ export default function WishesPage() {
       <BackgroundOrnaments />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 md:py-24">
+        <div className="relative">
+          <RibbonBurst />
+
+          <motion.h1
+            initial={{ opacity: 0, y: -16, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="mb-6 text-center font-serif text-5xl italic text-amber-200 drop-shadow-[0_0_25px_rgba(252,211,120,0.35)] sm:text-6xl md:text-7xl"
+          >
+            Happy Birthday!
+          </motion.h1>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
