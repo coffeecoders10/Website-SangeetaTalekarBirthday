@@ -12,6 +12,23 @@ type WishesCollageProps = {
   transitionKey: string;
 };
 
+const LANE_COLORS = [
+  { border: "border-rose-300/80", glow: "shadow-[0_0_16px_2px_rgba(253,164,175,0.45)]" },
+  { border: "border-amber-200/80", glow: "shadow-[0_0_16px_2px_rgba(253,230,138,0.45)]" },
+  { border: "border-fuchsia-400/80", glow: "shadow-[0_0_16px_2px_rgba(232,121,249,0.45)]" },
+  { border: "border-sky-300/80", glow: "shadow-[0_0_16px_2px_rgba(125,211,252,0.45)]" },
+  { border: "border-emerald-300/80", glow: "shadow-[0_0_16px_2px_rgba(110,231,183,0.45)]" },
+  { border: "border-violet-300/80", glow: "shadow-[0_0_16px_2px_rgba(196,181,253,0.45)]" },
+];
+
+function laneColorFor(key: string) {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) | 0;
+  }
+  return LANE_COLORS[Math.abs(hash) % LANE_COLORS.length];
+}
+
 export function WishesCollage({ groups, groupLabel, transitionKey }: WishesCollageProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
@@ -39,6 +56,8 @@ export function WishesCollage({ groups, groupLabel, transitionKey }: WishesColla
           const groupKey = group[0].id;
 
           if (group.length > 1 && label) {
+            const laneColor = laneColorFor(groupKey);
+
             return (
               <AnimatePresence key={groupKey} mode="popLayout" initial={false}>
                 {expandedGroups.has(groupKey)
@@ -58,21 +77,37 @@ export function WishesCollage({ groups, groupLabel, transitionKey }: WishesColla
                           },
                         }}
                         transition={{ duration: 0.35, delay: i * 0.05, ease: "easeOut" }}
-                        className="rounded-3xl bg-white/[0.04] p-1.5"
+                        className="relative"
                       >
                         {i === 0 && (
                           <button
                             type="button"
                             onClick={() => toggleGroup(groupKey)}
-                            className="mb-1.5 flex w-full cursor-pointer items-center justify-between rounded-full px-2 py-1 text-left"
+                            aria-label={`Collapse ${label} back into a stack`}
+                            className="absolute -top-2 -left-2 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-plum-950/90 text-foreground/80 shadow-lg transition-colors hover:text-foreground"
                           >
-                            <span className="font-serif text-xs italic text-foreground/70">{label}</span>
-                            <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-foreground/60">
-                              Collapse
-                            </span>
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-3.5 w-3.5"
+                            >
+                              <path d="M4 14h6v6" />
+                              <path d="M20 10h-6V4" />
+                              <path d="M14 10 21 3" />
+                              <path d="M3 21l7-7" />
+                            </svg>
                           </button>
                         )}
-                        <WishCard entry={entry} index={groupIndex + i} />
+                        <WishCard
+                          entry={entry}
+                          index={groupIndex + i}
+                          borderClassName={laneColor.border}
+                          glowClassName={laneColor.glow}
+                        />
                       </motion.div>
                     ))
                   : (

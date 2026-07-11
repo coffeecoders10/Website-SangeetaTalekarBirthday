@@ -18,9 +18,17 @@ type WishCardProps = {
   entry: WishEntry;
   index: number;
   variant?: "default" | "stackTop";
+  borderClassName?: string;
+  glowClassName?: string;
 };
 
-export function WishCard({ entry, index, variant = "default" }: WishCardProps) {
+export function WishCard({
+  entry,
+  index,
+  variant = "default",
+  borderClassName,
+  glowClassName,
+}: WishCardProps) {
   const shouldReduceMotion = useReducedMotion();
   const rotation = ROTATIONS[index % ROTATIONS.length];
   const accent = ACCENTS[index % ACCENTS.length];
@@ -72,7 +80,10 @@ export function WishCard({ entry, index, variant = "default" }: WishCardProps) {
     >
       <div
         className={cn(
-          "relative overflow-hidden rounded-3xl border border-white/10 bg-plum-950 p-5 shadow-xl shadow-plum-950/40 transition-shadow duration-300 group-hover:shadow-rose-300/10"
+          "relative overflow-hidden rounded-3xl bg-plum-950 p-5 shadow-xl shadow-plum-950/40 transition-shadow duration-300",
+          borderClassName ? "border-2" : "border border-white/10 group-hover:shadow-rose-300/10",
+          borderClassName,
+          glowClassName
         )}
       >
         <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-br", accent)} />

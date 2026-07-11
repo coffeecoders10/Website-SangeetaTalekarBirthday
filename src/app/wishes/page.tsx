@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "motion/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BackgroundOrnaments } from "@/components/BackgroundOrnaments";
 import { Button } from "@/components/ui/Button";
 import { WishesCollage } from "@/components/WishesCollage";
@@ -46,6 +46,21 @@ export default function WishesPage() {
   const [entries, setEntries] = useState<WishEntry[]>([]);
   const [state, setState] = useState<FetchState>("loading");
   const [groupMode, setGroupMode] = useState<GroupMode>("none");
+  const [isGroupMenuOpen, setGroupMenuOpen] = useState(false);
+  const groupMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isGroupMenuOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (groupMenuRef.current && !groupMenuRef.current.contains(event.target as Node)) {
+        setGroupMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isGroupMenuOpen]);
 
   const groups = useMemo(() => groupEntries(entries, groupMode), [entries, groupMode]);
 
@@ -101,24 +116,62 @@ export default function WishesPage() {
         </motion.div>
 
         {state === "success" && entries.length > 0 && (
-          <div className="mb-8 flex items-center justify-center gap-2">
-            <span className="text-xs uppercase tracking-widest text-foreground/50">Group by</span>
-            <div className="inline-flex rounded-full border border-white/15 bg-white/5 p-1">
-              {GROUP_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setGroupMode(option.value)}
-                  className={cn(
-                    "rounded-full px-3 py-1 text-xs transition-colors cursor-pointer",
-                    groupMode === option.value
-                      ? "bg-white/15 text-foreground"
-                      : "text-foreground/60 hover:text-foreground/90"
-                  )}
+          <div className="mb-8 flex justify-end">
+            <div ref={groupMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setGroupMenuOpen((open) => !open)}
+                className="flex cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-foreground/50 transition-colors hover:text-foreground/80"
+              >
+                Group by
+                {groupMode !== "none" && (
+                  <span className="text-foreground/70">
+                    · {GROUP_OPTIONS.find((o) => o.value === groupMode)?.label}
+                  </span>
+                )}
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={cn("h-3 w-3 transition-transform", isGroupMenuOpen && "rotate-180")}
                 >
-                  {option.label}
-                </button>
-              ))}
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+
+              <AnimatePresence>
+                {isGroupMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="absolute right-0 z-20 mt-1.5 min-w-[8rem] overflow-hidden rounded-xl border border-white/10 bg-plum-950/95 py-1 shadow-xl shadow-plum-950/40 backdrop-blur-sm"
+                  >
+                    {GROUP_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          setGroupMode(option.value);
+                          setGroupMenuOpen(false);
+                        }}
+                        className={cn(
+                          "block w-full cursor-pointer px-3 py-1.5 text-left text-xs transition-colors",
+                          groupMode === option.value
+                            ? "text-foreground"
+                            : "text-foreground/50 hover:text-foreground/80"
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         )}
