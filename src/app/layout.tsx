@@ -15,7 +15,7 @@ const serif = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: `A montage for ${PERSON_PROFILE.name}`,
+  title: `Birthday Montage for ${PERSON_PROFILE.name}`,
   description: `Answer a playful prompt about ${PERSON_PROFILE.name} and add your little metaphor to the collage.`,
 };
 
