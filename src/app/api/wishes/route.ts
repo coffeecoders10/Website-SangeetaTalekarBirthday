@@ -201,9 +201,8 @@ async function fetchWishes(url: string, headers: HeadersInit): Promise<WishEntry
   }
 
   const data = await res.json();
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.wishes)) return data.wishes;
-  if (Array.isArray(data?.value)) return data.value;
+  const wishes = data?.pjson?.wishes;
+  if (Array.isArray(wishes)) return wishes;
   return [];
 }
 
@@ -260,7 +259,7 @@ export async function POST(request: Request) {
     const res = await fetch(config.url, {
       method: "PUT",
       headers: config.headers,
-      body: JSON.stringify(updatedWishes),
+      body: JSON.stringify({ pjson: { wishes: updatedWishes } }),
     });
 
     if (!res.ok) {
