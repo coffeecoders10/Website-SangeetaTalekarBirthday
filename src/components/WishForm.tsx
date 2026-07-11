@@ -191,7 +191,7 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
             disabled={status === "loading"}
             className="w-full px-4 py-2.5 text-[0.8rem] sm:text-[0.875rem]"
           >
-            {status === "loading" ? "Sending..." : "Send wish"}
+            {status === "loading" ? "Adding..." : "Add my answer"}
           </Button>
 
           {status === "error" && (

@@ -30,7 +30,7 @@ export function ConceptPrompt({ concept, onShuffle }: ConceptPromptProps) {
       </AnimatePresence>
 
       <Button type="button" variant="secondary" onClick={onShuffle} className="mt-6">
-        Shuffle prompt
+        Shuffle question
       </Button>
     </div>
   );
