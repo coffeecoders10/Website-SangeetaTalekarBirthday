@@ -23,6 +23,8 @@ jobs:
 
           export $(grep -v '^#' .env.local | xargs)
 
+          rm -rf .next
+
           npm install
           npm run build
 
