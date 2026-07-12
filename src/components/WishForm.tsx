@@ -99,7 +99,7 @@ export function WishForm({ concept, onShuffle, onSubmitted }: WishFormProps) {
           noValidate
         >
           <p className="text-[0.7rem] text-foreground/60 sm:text-[0.75rem]">
-            Answer the prompt below and sign it with your name. <br /> Feel free to answer as many prompts as you'd like — each one becomes part of {PERSON_PROFILE.name}'s collage.
+            Answer the question and sign it with your name. <br /> Feel free to answer as many prompts as you'd like — each one becomes part of {PERSON_PROFILE.name}'s collage.
           </p>
 
           <div>
